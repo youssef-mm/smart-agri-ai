@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#4CAF50"             # أخضر زمردي بارز للـ Highlights والأزرار
+backgroundColor = "#0E1117"          # خلفية التطبيق (Dark Slate)
+secondaryBackgroundColor = "#1A2026" # خلفية الـ Sidebar والكروت
+textColor = "#E0E0E0"                # لون النصوص (Off-White)
+font = "sans serif"
