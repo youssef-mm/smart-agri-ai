@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 
@@ -41,4 +40,11 @@ with DAG(
         """,
     )
 
-    kafka_producer >> streaming_processing >> analytics_sql
+    model_training = BashOperator(
+        task_id="model_training",
+        bash_command="""
+        cd /opt/airflow/project && python3 src/ml/train_mllib.py
+        """,
+    )
+
+    kafka_producer >> streaming_processing >> analytics_sql >> model_training
