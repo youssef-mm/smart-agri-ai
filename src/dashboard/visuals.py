@@ -5,12 +5,18 @@ import pandas as pd
 DARK_PAPER_BG = "rgba(0,0,0,0)"
 DARK_PLOT_BG = "#1A2026"
 
-def build_timeline_chart(df: pd.DataFrame, title: str = "Yield Trend Over Time"):
+def get_sampled_df(df: pd.DataFrame, max_points: int = 2000) -> pd.DataFrame:
+    """خافض حمولة عالي الكفاءة لضمان فتح المخططات في 0.1 ثانية"""
+    if len(df) > max_points:
+        return df.sample(n=max_points, random_state=42)
+    return df
+
+def build_smoothed_timeline_chart(df: pd.DataFrame, time_freq: str = "W", title: str = "Yield Trend Over Time") -> go.Figure:
     if df.empty:
         return go.Figure()
         
-    # تجميع البيانات أسبوعياً لتقليل الضوضاء ومنع تداخل الخطوط
-    df_sorted = df.sort_values("Date")
+    df_sample = get_sampled_df(df, max_points=5000)
+    df_sorted = df_sample.sort_values("Date")
     grouped = df_sorted.groupby([pd.Grouper(key="Date", freq="W"), "Crop_Type"])["Yield_Tons_ha"].mean().reset_index()
     
     fig = px.line(
@@ -20,39 +26,57 @@ def build_timeline_chart(df: pd.DataFrame, title: str = "Yield Trend Over Time")
         color="Crop_Type", 
         title=title, 
         template="plotly_dark",
-        markers=True
+        render_mode="svg"
     )
-    fig.update_traces(line=dict(width=2.5), marker=dict(size=5))
+    fig.update_traces(line=dict(width=2))
     fig.update_layout(
-        height=380, 
+        height=320, 
         paper_bgcolor=DARK_PAPER_BG, 
         plot_bgcolor=DARK_PLOT_BG, 
         margin=dict(l=20, r=20, t=40, b=20),
-        hovermode="x unified",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
     return fig
 
 def build_scatter_chart(df: pd.DataFrame, title: str = "Rainfall vs Yield"):
-    fig = px.scatter(df, x="Rainfall_mm", y="Yield_Tons_ha", size="NPK_Score", color="Crop_Type", title=title, template="plotly_dark")
-    fig.update_layout(height=380, paper_bgcolor=DARK_PAPER_BG, plot_bgcolor=DARK_PLOT_BG, margin=dict(l=20, r=20, t=40, b=20))
+    df_plot = get_sampled_df(df, max_points=1500)
+    fig = px.scatter(
+        df_plot, 
+        x="Rainfall_mm", 
+        y="Yield_Tons_ha", 
+        color="Crop_Type", 
+        title=title, 
+        template="plotly_dark",
+        render_mode="svg"
+    )
+    fig.update_layout(height=320, paper_bgcolor=DARK_PAPER_BG, plot_bgcolor=DARK_PLOT_BG, margin=dict(l=20, r=20, t=40, b=20))
     return fig
 
 def build_boxplot_chart(df: pd.DataFrame, title: str = "Yield Variabilities"):
-    fig = px.box(df, x="Crop_Type", y="Yield_Tons_ha", color="Crop_Type", points="all", title=title, template="plotly_dark")
-    fig.update_layout(height=380, paper_bgcolor=DARK_PAPER_BG, plot_bgcolor=DARK_PLOT_BG, margin=dict(l=20, r=20, t=40, b=20))
+    df_plot = get_sampled_df(df, max_points=3000)
+    fig = px.box(
+        df_plot, 
+        x="Crop_Type", 
+        y="Yield_Tons_ha", 
+        color="Crop_Type", 
+        points=False, 
+        title=title, 
+        template="plotly_dark"
+    )
+    fig.update_layout(height=320, paper_bgcolor=DARK_PAPER_BG, plot_bgcolor=DARK_PLOT_BG, margin=dict(l=20, r=20, t=40, b=20))
     return fig
 
 def build_heatmap_chart(df: pd.DataFrame, title: str = "Correlation Matrix"):
+    df_plot = get_sampled_df(df, max_points=5000)
     num_cols = ["Rainfall_mm", "Temperature_C", "Humidity_pct", "Soil_pH", "NPK_Score", "Yield_Tons_ha"]
-    corr = df[num_cols].corr()
+    corr = df_plot[num_cols].corr()
     fig = px.imshow(corr, text_auto=".2f", aspect="auto", color_continuous_scale="Viridis", title=title, template="plotly_dark")
-    fig.update_layout(height=380, paper_bgcolor=DARK_PAPER_BG, plot_bgcolor=DARK_PLOT_BG, margin=dict(l=20, r=20, t=40, b=20))
+    fig.update_layout(height=320, paper_bgcolor=DARK_PAPER_BG, plot_bgcolor=DARK_PLOT_BG, margin=dict(l=20, r=20, t=40, b=20))
     return fig
 
 def build_feature_importance_chart(fi_df: pd.DataFrame, title: str = "Top Yield Drivers"):
     fig = px.bar(fi_df.head(8), x="Importance", y="Feature", orientation="h", color="Importance", color_continuous_scale="Greens", title=title, template="plotly_dark")
-    fig.update_layout(height=320, paper_bgcolor=DARK_PAPER_BG, plot_bgcolor=DARK_PLOT_BG, yaxis=dict(autorange="reversed"))
+    fig.update_layout(height=300, paper_bgcolor=DARK_PAPER_BG, plot_bgcolor=DARK_PLOT_BG, yaxis=dict(autorange="reversed"))
     return fig
 
 def build_gauge_chart(yield_value: float, title: str = "Predicted Yield"):
@@ -71,5 +95,23 @@ def build_gauge_chart(yield_value: float, title: str = "Predicted Yield"):
             ],
         }
     ))
-    fig.update_layout(height=280, paper_bgcolor=DARK_PAPER_BG, font=dict(color="#E0E0E0"), margin=dict(l=20, r=20, t=40, b=20))
+    fig.update_layout(height=260, paper_bgcolor=DARK_PAPER_BG, font=dict(color="#E0E0E0"), margin=dict(l=20, r=20, t=40, b=20))
+    return fig
+
+def build_distribution_chart(df: pd.DataFrame, title: str = "Crop Yield Distribution"):
+    df_plot = get_sampled_df(df, max_points=3000)
+    fig = px.histogram(
+        df_plot, 
+        x="Yield_Tons_ha", 
+        nbins=25, 
+        title=title, 
+        template="plotly_dark",
+        color_discrete_sequence=["#10B981"]
+    )
+    fig.update_layout(
+        height=320, 
+        paper_bgcolor=DARK_PAPER_BG, 
+        plot_bgcolor=DARK_PLOT_BG, 
+        margin=dict(l=20, r=20, t=40, b=20)
+    )
     return fig

@@ -1,43 +1,40 @@
 import streamlit as st
 
-def inject_custom_css(lang: str = "ar"):
-    direction = "rtl" if lang == "ar" else "ltr"
-    text_align = "right" if lang == "ar" else "left"
+def inject_enterprise_css(lang_code: str = "ar"):
+    direction = "rtl" if lang_code == "ar" else "ltr"
+    text_align = "right" if lang_code == "ar" else "left"
     
     st.markdown(f"""
         <style>
-        /* RTL & Language Alignment Fixes */
-        .stApp, [data-testid="stSidebar"] {{
+        .stApp, [data-testid="stSidebar"], [data-testid="stHeader"] {{
             direction: {direction};
             text-align: {text_align};
         }}
         
-        /* Metric Cards Styling */
         div[data-testid="stMetric"] {{
             background-color: #1A2026;
             border: 1px solid #2D3748;
             border-radius: 10px;
             padding: 12px 16px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }}
-        
         div[data-testid="stMetricValue"] {{
             font-size: 1.7rem !important;
             font-weight: 700;
-            color: #4CAF50 !important;
-        }}
-
-        /* Clean Sidebar & Buttons */
-        .stDownloadButton button {{
-            width: 100%;
-            background-color: #2E7D32 !important;
-            color: white !important;
-            border-radius: 8px;
-            border: none;
+            color: #10B981 !important;
         }}
         
-        .stDownloadButton button:hover {{
-            background-color: #388E3C !important;
+        /* Power BI Card Container Styling */
+        div[data-testid="stVerticalBlock"] > div[data-testid="stBlock"] {{
+            border-radius: 12px;
+        }}
+        
+        .stDownloadButton button {{
+            width: 100%;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+            color: white !important;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
         }}
         </style>
     """, unsafe_allow_html=True)
