@@ -25,11 +25,11 @@ categorical_cols = ["Region", "Soil_Type", "Crop", "Weather_Condition"]
 numeric_cols = ["Rainfall_mm", "Temperature_Celsius", "Days_to_Harvest", "Fertilizer_Used", "Irrigation_Used"]
 
 indexers = [
-    StringIndexer(inputCol=col, outputCol=f"{col}_index", handleInvalid="keep")
-    for col in categorical_cols
+    StringIndexer(inputCol=c, outputCol=f"{c}_index", handleInvalid="keep")
+    for c in categorical_cols
 ]
 
-feature_cols = [f"{col}_index" for col in categorical_cols] + numeric_cols
+feature_cols = [f"{c}_index" for c in categorical_cols] + numeric_cols
 assembler = VectorAssembler(inputCols=feature_cols, outputCol="features")
 
 rf = RandomForestRegressor(featuresCol="features", labelCol="Yield_tons_per_hectare", numTrees=50, seed=42)
