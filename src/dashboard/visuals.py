@@ -6,18 +6,21 @@ DARK_PAPER_BG = "rgba(0,0,0,0)"
 DARK_PLOT_BG = "#1A2026"
 
 def get_sampled_df(df: pd.DataFrame, max_points: int = 2000) -> pd.DataFrame:
-    """خافض حمولة عالي الكفاءة لضمان فتح المخططات في 0.1 ثانية"""
+    """خافض حمولة عالي الكفاءة لضمان فتح المخططات بسرعة"""
     if len(df) > max_points:
         return df.sample(n=max_points, random_state=42)
     return df
 
 def build_smoothed_timeline_chart(df: pd.DataFrame, time_freq: str = "W", title: str = "Yield Trend Over Time") -> go.Figure:
+    """رسم بياني زمني ناعم مع تجميع أسبوعي لمنع تداخل البيانات"""
     if df.empty:
         return go.Figure()
         
-    df_sample = get_sampled_df(df, max_points=5000)
-    df_sorted = df_sample.sort_values("Date")
-    grouped = df_sorted.groupby([pd.Grouper(key="Date", freq="W"), "Crop_Type"])["Yield_Tons_ha"].mean().reset_index()
+    df_plot = df.copy()
+    df_plot["Date"] = pd.to_datetime(df_plot["Date"])
+    
+    # تجميع البيانات أسبوعياً
+    grouped = df_plot.groupby([pd.Grouper(key="Date", freq=time_freq), "Crop_Type"])["Yield_Tons_ha"].mean().reset_index()
     
     fig = px.line(
         grouped, 
@@ -28,9 +31,10 @@ def build_smoothed_timeline_chart(df: pd.DataFrame, time_freq: str = "W", title:
         template="plotly_dark",
         render_mode="svg"
     )
-    fig.update_traces(line=dict(width=2))
+    # تنعيم الخطوط وزيادة سمكها
+    fig.update_traces(line=dict(width=2.5, shape='spline'))
     fig.update_layout(
-        height=320, 
+        height=330, 
         paper_bgcolor=DARK_PAPER_BG, 
         plot_bgcolor=DARK_PLOT_BG, 
         margin=dict(l=20, r=20, t=40, b=20),

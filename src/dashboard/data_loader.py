@@ -4,12 +4,15 @@ import numpy as np
 import streamlit as st
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-DATA_FILE = BASE_DIR / "data" / "crop_yield.csv"
+PROCESSED_FILE = BASE_DIR / "data" / "processed_crop_yield.csv"
+RAW_FILE = BASE_DIR / "data" / "crop_yield.csv"
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def load_dashboard_data() -> pd.DataFrame:
-    if DATA_FILE.exists():
-        df = pd.read_csv(DATA_FILE)
+    target_file = PROCESSED_FILE if PROCESSED_FILE.exists() else RAW_FILE
+    
+    if target_file.exists():
+        df = pd.read_csv(target_file)
         df.dropna(inplace=True)
         
         rename_map = {
@@ -19,7 +22,6 @@ def load_dashboard_data() -> pd.DataFrame:
         }
         df.rename(columns=rename_map, inplace=True)
         
-        # إنشاء نطاق زمني منطقي وسريع (السنة الأخيرة فقط بدلاً من 100 سنة)
         if "Date" not in df.columns:
             df["Date"] = pd.date_range(end=pd.Timestamp.now(), periods=len(df), freq='min')
             
@@ -33,4 +35,4 @@ def load_dashboard_data() -> pd.DataFrame:
             
         return df
     else:
-        raise FileNotFoundError(f"لم يتم العثور على الملف: {DATA_FILE}")
+        raise FileNotFoundError(f"لم يتم العثور على ملف البيانات في: {RAW_FILE}")
