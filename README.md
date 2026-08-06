@@ -196,10 +196,10 @@ To keep collaboration clean and error-free, the team follows strict conventions:
 
 | Member | Main Focus | Branch | Output |
 |---|---|---|---|
-| **Jana** | Infrastructure & Streaming | `feature/docker-kafka-ingestion` | Docker Compose & Kafka Producer |
-| **Mohamed** | Big Data Engineer | `feature/spark-streaming-sql` | PySpark Streaming & Spark SQL |
-| **Rowaida** | Machine Learning Engineer | `feature/mllib-crop-prediction` | MLlib Crop Prediction (RMSE, R²) |
-| **Youssef** | Visualization & Team Lead | `feature/streamlit-visualization` | Streamlit Dashboard & Live UI |
+| **Jana Atef** | Infrastructure & Streaming | `feature/docker-kafka-ingestion` | Docker Compose & Kafka Producer |
+| **Mohamed Emad** | Big Data Engineer | `feature/spark-streaming-sql` | PySpark Streaming & Spark SQL |
+| **Rowaida Mohamed** | Machine Learning Engineer | `feature/mllib-crop-prediction` | MLlib Crop Prediction (RMSE, R²) |
+| **Youssef Mohamed** | Visualization & Team Lead | `feature/streamlit-visualization` | Streamlit Dashboard & Live UI |
 
 ---
 
