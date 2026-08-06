@@ -7,7 +7,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, when
 from sklearn.ensemble import RandomForestRegressor as SklearnRF
 
-# 1. إعداد Spark Session
 spark = (
     SparkSession.builder.appName("Smart Agri AI - PySpark MLlib")
     .master("local[*]")
@@ -29,14 +28,11 @@ df_processed = df_sampled.withColumn(
 )
 
 print("Training PySpark MLlib Pipeline...")
-# تحويل PySpark DataFrame إلى Pandas بعد معالجتها بـ Spark
 pandas_df = df_processed.toPandas()
 
-# فصل Features و Target
 X = pandas_df.drop(columns=["Yield_tons_per_hectare"])
 y = pandas_df["Yield_tons_per_hectare"]
 
-# Preprocessing بـ Scikit-Learn للحفظ السلس
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline as SkPipeline
 from sklearn.preprocessing import OneHotEncoder as SkOneHot
