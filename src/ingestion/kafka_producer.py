@@ -8,7 +8,6 @@ import pandas as pd
 TOPIC_NAME = "crop_yield_topic"
 BATCH_SIZE = 1000
 
-# بيقرأ kafka:9092 لو جوه container أو localhost:9092 لو شغال محلياً
 BOOTSTRAP_SERVER = os.getenv("KAFKA_BOOTSTRAP_SERVER", "localhost:9092")
 
 BASE_DIR = Path(__file__).resolve().parents[2]
