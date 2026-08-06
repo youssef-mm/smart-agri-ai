@@ -29,16 +29,22 @@ evaluator_rmse = RegressionEvaluator(labelCol="Yield_tons_per_hectare", predicti
 evaluator_r2 = RegressionEvaluator(labelCol="Yield_tons_per_hectare", predictionCol="prediction", metricName="r2")
 evaluator_mae = RegressionEvaluator(labelCol="Yield_tons_per_hectare", predictionCol="prediction", metricName="mae")
 
-rmse_val = evaluator_rmse.evaluate(predictions)
-r2_val = evaluator_r2.evaluate(predictions)
-mae_val = evaluator_mae.evaluate(predictions)
-
 print("=" * 60)
 print("Model Evaluation Results (On Preprocessed Data):")
 print("=" * 60)
-print(f"Root Mean Squared Error (RMSE): {rmse_val:.4f}")
-print(f"R-squared (R2 Score):           {r2_val:.4f}")
-print(f"Mean Absolute Error (MAE):       {mae_val:.4f}")
+print(f"Root Mean Squared Error (RMSE): {evaluator_rmse.evaluate(predictions):.4f}")
+print(f"R-squared (R2 Score):            {evaluator_r2.evaluate(predictions):.4f}")
+print(f"Mean Absolute Error (MAE):       {evaluator_mae.evaluate(predictions):.4f}")
 print("=" * 60)
 
+
+rmse_value = evaluator_rmse.evaluate(predictions)
+r2_value = evaluator_r2.evaluate(predictions)
+mae_value = evaluator_mae.evaluate(predictions)
+
+print("=" * 40)
+print(f"Model RMSE: {rmse_value}")
+print(f"Model R2 Score: {r2_value}")
+print(f"Model MAE: {mae_value}")
+print("=" * 40)
 spark.stop()

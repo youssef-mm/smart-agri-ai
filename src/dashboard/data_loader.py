@@ -36,3 +36,13 @@ def load_dashboard_data() -> pd.DataFrame:
         return df
     else:
         raise FileNotFoundError(f"لم يتم العثور على ملف البيانات في: {RAW_FILE}")
+
+def optimize_memory(df):
+    for col in df.columns:
+        if df[col].dtype == "float64":
+            df[col] = df[col].astype("float32")
+        elif df[col].dtype == "int64":
+            df[col] = df[col].astype("int32")
+        elif df[col].dtype == "object":
+            df[col] = df[col].astype("category")
+    return df        
